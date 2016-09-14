@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="utf-8" />
+        <script   src="https://code.jquery.com/jquery-2.2.2.js"   integrity="sha256-4/zUCqiq0kqxhZIyp4G0Gk+AOtCJsY1TA00k5ClsZYE="   crossorigin="anonymous"></script>
+        <script src="js/script.js"></script>
+        <title>Инструкция для mailer.js и mailer.php</title>   
+        <meta name="description" content="Описание работы скриптов mailer.js и mailer.php. Инструкция по использованию данных скриптов с примерами" />
+        <style>
+            body{
+                font-family: sans-serif;
+                line-height: 1.4;
+            }
+        </style>
+    </head>
+    <body>
+	<h1>ИНСТРУКЦИЯ ПО ИСПОЛЬЗОВАНИЮ mailer.js</h1>
+
+	<h2>ОПИСАНИЕ СКРИПТА</h2>
+
+<p>Скрипт работает двумя способами. Если форма статичная(т.е. она видна сразу), то при отправке форма убирается, и вместо нее выводится сообщение об успехе или неудаче отправки.
+Если форма должна появляться по щелчку на кнопку, то сначала она всплывает, потом после отправки выдается сообщение об успехе или неудаче.
+    Чтобы скрипт работал, для формы назначен обработчик события <code>submit</code>.
+    Если форму нужно сначало показать, то назначаем событие <code>click()</code> для нужной кнопки и внутри данного события назначаем событие submit для вновь созданной 
+
+формы.</p>
+<h2>ДЛЯ СТАТИЧЕСКОЙ ФОРМЫ</h2>
+<code><pre>
+	$('#getServiceNotebook').submit(function () {
+
+		var _this = $(this); //сохраняем ссылку на данную форму
+		sendStaticForm(_this); //вызываем функцию отправки через ajax
+		return false; //отменяем стандартной поведение события submit
+	});
+</pre></code>
+<h2>ДЛЯ ДИНАМИЧЕСКОЙ ФОРМЫ</h2>
+<code><pre>
+	$('.getService').click(function () {
+
+		var _this = $(this); //сохраняем ссылку на обьект по которому щелкнули
+		var formName = 'service'; //придумываем имя для формы
+
+		showForm(_this, 'service', 'getService'); //данная функция создает стандартную форму, дает имя, заполняет параметр "t" и выводит ее рядом с кнопкой + назначает ей событие submit
+		return false;
+//отменяем стандартное поведение для щелчка	});
+</pre></code>
+<h2>ДОБАВЛЕНИЕ СВОЕЙ ФОРМЫ</h2>
+<h3>СТАТИЧЕСКАЯ ФОРМА</h3>
+<h4>ВСТАВЛЯЕМ В СТРАНИЦУ HTML КОД ФОРМЫ</h4>
+<code><pre>
+&lt;form id=&quot;getPrice&quot;&gt;
+	&lt;input type=&quot;hidden&quot; name=&quot;t&quot; value=&quot;getPrice&quot; /&gt;
+	&lt;input type=&quot;text&quot; name=&quot;name&quot; required placeholder=&quot;Введите имя&quot; /&gt;
+	&lt;input type=&quot;text&quot; name=&quot;email&quot; required placeholder&quot;Введите email&quot;/&gt;
+	&lt;input type=&quot;submit&quot; /&gt;
+&lt;/form&gt;</pre>
+</code>
+
+<h4>НАЗНАЧАЕМ ОБРАБОТЧИК СОБЫТИЯ SUBMIT</h4>
+<code><pre>
+$('#getPrice').submit(function () {
+
+		var _this = $(this);
+//сохраняем ссылку на данную форму
+		sendStaticForm(_this);
+//вызываем функцию отправки через ajax
+		return false;
+	});//отменяем стандартной поведение события submit
+</pre></code>
+        <h5>ПОЯСНЕНИЯ:</h5>
+        <ul>
+            <li>У каждого тега <code>input</code> есть атрибут <code>&quot;name&quot;</code>. Он соответствует названию параметра в <code>mailer.php</code></li>
+            <li>Параметр <code>t</code> со значением <code>getPrice</code> скажет скрипту <code>mailer.php</code> что передаваемая форма типа - <code>getPrice</code>. Основываясь на этой информации <code>mailer.php</code> параметры соответствующие данному типу формы. Мы зададим их в инструкции для <code>mailer.php</code>. Сделаем  <code>name</code> и <code>email</code>. </li>
+            <li>Аттрибут <code>required</code> означает что атрибут обязателен для заполнения и браузер не даст отправить форму с пустым полем такого типа. </li>
+            <li>Атрибут <code>placeholder</code> это текст которые видит пользователь пока не введет данные в поле.</li>
+        </ul>
+
+
+        <h3>ДИНАМИЧЕСКАЯ ФОРМА</h3>
+        <p>Данный тип формы имеет только два поля и они стандартны - это имя и телефон.</p>
+        <h4>ДОБАВЛЯЕМ НА СТРАНИЦУ КОД ССЫЛКИ КОТОРАЯ ОТОБРАЖАЕТ НАШУ ФОРМУ</h4>
+        <code>&lt;a id=&quot;getServicePc&quot; href=&quot;#&quot;&gt;Заказать ремонт пк&lt;/a&gt;</code>
+        <h4>НАЗНАЧАЕМ ССЫЛКЕ СОБЫТИЕ CLICK</h4>
+<code><pre>$('#getServiePc').click(function () {
+
+		var _this = $(this);
+//сохраняем ссылку на обьект по которому щелкнули
+		var formName = 'service';//придумываем имя для формы
+
+		var formType = 'getServicePc';
+		showForm(_this, formName, 'getServicePc');//данная функция создает стандартную форму, дает имя, заполняет параметр &quot;t&quot; и выводит ее 
+
+рядом с кнопкой + назначает ей событие submit
+		return false;
+//отменяем стандартное поведение для щелчка	});
+</pre></code>
+        <h5>ПОЯСНЕНИЯ:</h5>
+        <ul>
+            <li>строчка <code>var formName = 'service';</code> задает <code>id</code> формы. Данный <code>id</code> задаем уникальным в пределах страницы</li>
+            <li>строчка <code>formType = 'getServicePc';</code> задает параметр <code>t</code> для формы.</li>
+            <li>Как уже говорилось данная форма отправляет только имя и телефон, изменить это можно либо создав новую функцию <code>getForm</code>, либо добавив в существующую форму новое поле
+                <ul>
+                    <li>например добавить перед <code>&quot;return false;&quot;</code> строчку:<br />
+        <code>$('#' + formName).prepend('&lt;input name=&quot;nameService&quot; type=&quot;hidden&quot; value=&quot;' + nameService + '&quot;&gt;');</code></li></ul>
+            <li>Каждое поле <code>input</code> имеет свой атрибут <code>&quot;name&quot;</code>. Важно чтобы в файле <code>mailer.php</code> в цикле <code>switch</code> было правило для параметра <code>t</code>, которое содержит все нужные нам параметры.</li>
+        </ul>
+		
+        <h1>ИНСТРУКЦИЯ ПО ИСПОЛЬЗОВАНИЮ mailer.php</h1>
+<p>
+<em>*
+символ &quot;→&quot; - означает что строка не переносится на следующую строку, просто для удобства чтения инструкции строка
+    была разбита на части </em></p>
+<code>
+        <div>таким образом:</div>
+
+        <div>//	привет→</div>
+        <div>мир</div>
+
+        <div>на самом деле выглядит:</div>
+
+    <div>//	привет мир</div></code>
+
+        <h2>ОПИСАНИЕ СКРИПТА</h2>
+
+<p>Скрипт написан для работы с ajax. Для ajax скрипта предусмотрен вывод текста, а именно:</p>
+        <ul>
+            <li>&quot;0&quot; выводится в случае если письмо отправлено не было</li>
+            <li>&quot;1&quot; если письмо удачно отправлено</li>
+        </ul>
+        <p>*<em>Иногда на почту могут приходить письма с ошибками из-за ботов. Чтобы поисковые боты не трогали данный скрипт нужно запретить его в файле robots.txt. Но некоторые боты могут игнорировать данный файл. В случае обращения к скрипту без параметров будет приходить сообщение об ошибке отправки формы</em></p>
+
+
+
+
+        <h2>ОПИСАНИЕ РАБОТЫ СКРИПТА</h2>
+
+        1. Скрипту передаем данные через <code>GET</code> или <code>POST</code> запрос. Чтобы скрипт отправил письмо должны быть переданы ВСЕ параметры.
+
+        <h3>СПИСОК ПАРАММЕТРОВ:</h3>
+<ul>
+    <li><code>&quot;t&quot;</code> - этот параметр должен содержать тип формы которая отправила данные например
+        <code>&quot;getServiceNotebook&quot;</code>. -Передаваемый тип должен быть в списке инструкций для
+        цикла <code>switch</code> в тексте скрипта. Данный параметр присутствует в любом случае.</li>
+    <li><code>&quot;name&quot;</code> - в этом параметре передается имя отправителя формы</li>
+    <li><code>&quot;telephone&quot;</code> - содержит телефон</li>
+        </ul>
+        <p>Как правило <code>&quot;name&quot;</code> и <code>&quot;telephone&quot;</code> присутствуют всегда. Могут быть и другие, чтобы посмотреть
+            какие параметры соответствуют определенному типу формы нужно найти правило в цикле <code>switch</code> и
+            посмотреть какие переменные получаются для данного типа( все <code>&quot;getValue( &quot;ИмяПараметра&quot; )&quot;</code> ).</p>
+
+        <h4>ПРИМЕР:</h4>
+        <p>Мы хотим узнать какие параметры нужны чтобы отправить форму тип <code>getService</code>. Ищем в
+            цикле <code>switch</code> правило <code>case &quot;getService&quot;</code>.</p>
+
+        <h5>текст данного правила:</h5>
+<code><pre>
+		//			case &quot;getService&quot;:
+
+		//				$name = getValue('name');
+
+		//                		$telephone = getValue('telephone');
+
+		//				$nameService = getValue('nameService');
+
+		//                		$message = &quot;&lt;h1&gt;Заявка на услугу - $nameService &lt;/h1&gt;&quot;→
+		.sprintf($messageTemplate, $name, $telephone).&quot;&lt;/ul&gt;&quot;;
+		//				
+$subject = &quot;$site. Заявка на услугу&quot;;
+
+		//             			break;
+</pre></code>
+        <p>Среди данных переменных находим те что содержат текст вида <code>&quot;getValue(&quot;ИмяПараметра&quot;)&quot;</code>.
+		В данном случае таких 3. ИмяПараметра для каждого из них </p>
+<code><pre>
+		//	name
+		//	telephone
+		//	nameService
+</pre></code>
+		<p>Именно эти параметры и нужно передать для того чтобы письмо отправилось и скрипт выдал
+		 ответ &quot;1&quot;.</p>
+        <p>2. Скрипт проверяет параметр <code>&quot;t&quot;</code>. Если содержимое параметра есть в списке правил цикла <code>switch</code>, то применяется содержимое соответствующего правило. Иначе 
+
+            выдается &quot;0&quot; и отправляется письмо с параметрами ошибки на почту указанную в переменной <code>$mail</code>.</p>
+        <p>3. Выполняется содержимое правила для <code>&quot;t&quot;</code>. Заполняются переменные при помощи функции <code>getValue('имяПеременной')</code>. Данная функция экранирует спецсимволы и 
+
+    обрезает пробельные символы вначале и в конце строки.</p>
+        <p>4. Создается переменная <code>$message</code>. В которой содержится текст письма</p>
+        <p>5. Создается переменная <code>$subject</code>. В которой содержится тема письма</p>
+        <p>6. Отправляется письмо. </p>
+        <h3>Используются переменные: </h3>
+        <ul>
+            <li><code>$mail</code> - адрес получателя(задается в начале скрипта)</li>
+            <li><code>$message</code>-текст письма(задается в цикле switch)</li>
+            <li><code>$subject</code> - тема письма(задается в цикле switch)</li>
+            <li><code>$headers</code> - зоголовки письма(задается в начале скрипта)</li>
+        </ul>
+
+        <p>7. Получаем ответ 1 или 0.</p>
+        <ul>
+            <li>1- письмо успешно передано</li>
+            <li>0- письмо передать не удалось</li>
+</ul>
+
+
+
+
+        <h2>ДОБАВЛЕНИЕ НОВЫХ ТИПОВ ФОРМЫ</h2>
+
+        <p>Для добавления нового типа формы нужно в цикл <code>switch</code> добавить новое правило <code>&quot;case&quot;</code> вида:</p>
+<code><pre>
+//	case &quot;типФормы&quot;:
+//		$имяПеременнойДляИспользованияВШаблонеПисьма = getValue('имяПараметра');
+//		$имяПеременнойДляИспользованияВШаблонеПисьма = getValue('имяПараметра');
+//		$message = &quot;&lt;h1&gt;Заголовок письма&lt;/h1&gt;&lt;p&gt;Основная часть письма:&lt;br/&gt; имя параметра -→
+$имяПеременнойДляИспользованияВШаблонеПисьма&lt;/p&gt;&quot;;
+//		$subject = &quot;текст темы письма&quot;;
+//		break;
+        </pre></code>
+где:
+        <ul>
+            <li><code>case &quot;типФормы&quot;</code> - <code>&quot;типФормы&quot;</code> меняем на значение которое мы хотим передавать в параметре <code>&quot;t&quot;</code>
+	в качестве типа формы. <br />
+                НАПРИМЕР: <code>case &quot;getPrice&quot;:</code></li>
+            <li><code>$имяПеременнойДляИспользованияВШаблонеПисьма</code> - тут нужно придумать имя для переменной которую
+                потом можно вставлять в текст сообщения <code>$message</code>. Таких переменных может быть сколько угодно.</li>
+            <li><code>getValue('имяПараметра')</code> - <code>имяПараметра</code> меняем на название параметра который будем передавать
+                в <code>GET|POST</code> запросе. 
+                НАПРИМЕР: <code>$email = getValue('email');</code></li>
+            <li><code>$message =&quot;текст письма&quot;</code> - Тут в ковычках содержится текст письма который придет. в данный
+	текст можно вставлять переменные которые были заданы выше. Так же если использовать теги HTML
+                то письмо будет отображаться с учетом этих тегов. Можно использовать конструкцию <code>sprintf()</code> для
+	использования универсального шаблона. Про данную конструкцию можно найти в справочниках по PHP<br />
+                НАПРИМЕР:<br />
+                <code>
+		//	case &quot;getPrice&quot;:
+		//		$name = getValue('name');
+		//		$email = getValue('email');
+		//		$message = &quot;Заявка на получение прайс-листа. Имя получателя: $name →
+                    Электронная почта получателя: $email&quot;;</code>
+        //</li>
+            <li><code>$subject = &quot;Текст темы письма&quot;</code> - тут будет содержаться текст который будет в поле <code>&quot;тема письма&quot;</code>. </li>
+        </ul>
+        <p>В итоге должно получиться что-то такое:</p>
+<code><pre>
+//	case &quot;getPrice&quot;:
+//		$name = getValue('name');
+//		$email = getValue('getValue');
+//		$message = &quot;&lt;h1&gt;Заявка на получение прайс листа&lt;/h1&gt;&lt;p&gt;&lt;ul&gt;&lt;li&gt;Имя получателя: $name&lt;/li&gt;→
+&lt;li&gt;Электронная почта получателя: $email&lt;/li&gt;&lt;/ul&gt;&lt;/p&gt;&quot;;
+//		$subject = &quot;$site. Заявка на получение прайса&quot;;
+//		break;
+	</pre></code>
+        </body>
+</html>
